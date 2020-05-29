@@ -1,0 +1,59 @@
+#include<SoftwareSerial.h>
+char data = 0;
+int ledRed=3; // D3 IO3 핀을 사용
+int ledGreen=4; // D4 IO4 핀을 사용
+int ledBlue=5; // D5 IO15 핀을 사용
+int i;
+
+SoftwareSerial BTSerial(11,12);
+
+void setup() {
+Serial.begin(9600);
+BTSerial.begin(9600);
+ pinMode(ledRed, OUTPUT);
+ pinMode(ledGreen, OUTPUT);
+ pinMode(ledBlue, OUTPUT);
+}
+
+void loop() {
+if(BTSerial.available()) {
+data = BTSerial.read();
+Serial.write(data);
+switch(data)
+{
+case'4':
+digitalWrite(ledRed,LOW);
+digitalWrite(ledBlue,HIGH);
+digitalWrite(ledGreen,LOW);
+break;
+case'3':
+digitalWrite(ledRed,LOW);
+digitalWrite(ledBlue,LOW);
+digitalWrite(ledGreen,HIGH);
+break;  
+case'2':
+for(i=0;i<10;i++){
+digitalWrite(ledRed,HIGH);
+digitalWrite(ledBlue,HIGH);
+digitalWrite(ledGreen,HIGH);
+delay(1000); 
+digitalWrite(ledRed,LOW);
+digitalWrite(ledBlue,LOW);
+digitalWrite(ledGreen,LOW);
+delay(1000);
+}
+break;//blink
+case'1':digitalWrite(ledRed,HIGH);
+digitalWrite(ledBlue,HIGH);
+digitalWrite(ledGreen,HIGH); 
+break; //on
+case'0':digitalWrite(ledRed,LOW);
+digitalWrite(ledBlue,LOW);
+digitalWrite(ledGreen,LOW);
+break; //off
+}
+}
+if(Serial.available())
+BTSerial.write(Serial.read());
+delay(1);
+}
