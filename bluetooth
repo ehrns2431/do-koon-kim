@@ -5,12 +5,12 @@ int ledGreen=4; // D4 IO4 핀을 사용
 int ledBlue=5; // D5 IO15 핀을 사용
 int i;
 
-SoftwareSerial BTSerial(11,12);
+SoftwareSerial BTSerial(11,12); //블루투스 11,12번핀 사용
 
 void setup() {
-Serial.begin(9600);
+Serial.begin(9600); //블루투스 통신속도
 BTSerial.begin(9600);
- pinMode(ledRed, OUTPUT);
+ pinMode(ledRed, OUTPUT); //Led출력
  pinMode(ledGreen, OUTPUT);
  pinMode(ledBlue, OUTPUT);
 }
@@ -19,7 +19,7 @@ void loop() {
 if(BTSerial.available()) {
 data = BTSerial.read();
 Serial.write(data);
-switch(data)
+switch(data) //스위치 문을 통한 전송 받은 데이터 값에 따른 기능 작동
 {
 case'4':
 digitalWrite(ledRed,LOW);
@@ -32,7 +32,7 @@ digitalWrite(ledBlue,LOW);
 digitalWrite(ledGreen,HIGH);
 break;  
 case'2':
-for(i=0;i<10;i++){
+for(i=0;i<10;i++){ //반복문을 통한 Led의 점등과 소등 반복(반복문이 동작하는 동안 새로운 데이터 값을 갱신받지 못함)
 digitalWrite(ledRed,HIGH);
 digitalWrite(ledBlue,HIGH);
 digitalWrite(ledGreen,HIGH);
