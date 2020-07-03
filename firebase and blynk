@@ -17,8 +17,8 @@ char auth[]="HhoKF1oyY9cAtMlynT0iz_52LuyaQn9w"; //blynk 토큰
 String path = "/data"; //데이터베이스에 저장될 프로젝트 버킷
 
 uint16_t count = 0;
-int LD1 = D3; //gp0 //lED에 사용될 핀(기본 내장)
-int LD2 = D4; //gp2 //lED에 사용될 핀
+int LD1 = D3; //gp0 //lED에 사용될 핀
+int LD2 = D4; //gp2 //lED에 사용될 핀(기본 내장)
 
 void printResult(FirebaseData &data); //함수 선언
 void printResult(StreamData &data);
