@@ -1,0 +1,62 @@
+#include <ESP8266wifi.h>
+#include <NTPClient.h>
+#include <WiFiUdp.h>
+
+// Replace with your network credentials
+const char *ssid="TP-LINK_7C13";
+const char *password="31008990";
+
+// Define NTP Client to get time
+WiFiUDP udp;
+NTPClient timeClient(udp, "kr.pool.ntp.org");//32400
+int gpio13Led = LED_BUILTIN;
+
+void setup() {
+  Serial.begin(115200); // 시리얼 통신 설정
+  pinMode(gpio13Led, OUTPUT);
+  
+  // Connect to Wi-Fi
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+ pinMode(D5, OUTPUT);
+}
+// Initialize a NTPClient to get time
+timeClient.begin();
+timeClient.setTimeOffset(32400);//kr
+} // 시리얼 통신으로 와이파이가 연결되면 타임클라이언트를 시작하고 셋타임옵셋에 GMT+9시간인 32400 설정
+
+void loop() {
+  static unsigned long loopCnt = 0;
+  static unsigned long nextMil = millis() + 1000; // 1초단위로 밀리스 함수를 사용하기 위해 static 이용
+
+  if(millis() > nextMil){ //-----
+    nextMil = millis() + 1000;  // 현재의 밀리스 값이 넥스트밀보다 커지게 되면 1000ms(1초)가 도래했다는것을 확인할수 있기때문에 1000ms를 추가하여 저장
+    loopCnt++;
+
+    timeClient.update();
+    unsigned long epochTime = timeClient.getEpochTime(); //이포크타임을 가져옴
+    struct tm *ptm = gmtime ((time_t *)&epochTime); // 가져온 이포크 타임에 있는 내용을 포인터로 tm에 저장
+
+    int CD = ptm->tm_mday; // tm에 저장된 값을 뽑아옴
+    int CM = ptm->tm_mon+1; // 월은 0~11월로 되어있기때문에 +1
+    int CY = ptm->tm_year+1900; // 연도는 값에 +1900
+    
+    int HH = ptm->tm_hour;
+    int MM = ptm->tm_min;
+    int SS = ptm->tm_sec;
+    Serial.println(loopCnt); // 숫자가 증가되도록 설정
+    Serial.printf("%04d-%02d-%02d\n",CY,CM,CD);// 서식 지정자를 통해 년,월,일과 시,분,초를 표시
+    Serial.printf("%02d:%02d.%02d\n",HH,MM,SS);
+  }
+  delay(1);
+  {
+  digitalWrite(gpio13Led, HIGH);
+  delay(1000);
+  digitalWrite(gpio13Led, LOW);
+  delay(1000);
+  }
+}
