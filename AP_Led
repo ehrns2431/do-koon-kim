@@ -1,0 +1,55 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+#define SSID_AP "41615015" // for AP mode
+#define PASSWORD_AP "00000000" // for AP mode
+
+IPAddress local_ip(192, 168,  4,  1); //IP for AP mode
+IPAddress gateway(192,  168,  4,  1); //IP for AP mode
+IPAddress subnet(255, 255,  255,  0); //IP for AP mode
+ESP8266WebServer server(80);
+
+int set_case = 0;
+
+void setup() { 
+Serial.begin(9600);
+Serial.println("LED Control");
+pinMode(D4, OUTPUT);
+
+WiFi.softAP(SSID_AP, PASSWORD_AP); // AP mode
+WiFi.softAPConfig(local_ip, gateway, subnet);
+
+server.on("/", HTTP_GET, handle_OnConnect);
+server.on("/LedOn", HTTP_GET, handle_LedOn);
+server.on("/LedOff", HTTP_GET, handle_LedOff);
+
+server.begin();
+Serial.println("ESP8266 web server started...");
+}
+
+void loop() {
+server.handleClient();
+ardu_action();
+}
+
+//HTTP request
+void handle_OnConnect() {
+Serial.println("Client connected");
+server.send(200, "text/html", SendHTML());
+}
+
+void handle_LedOn(){
+  set_case = 1;
+  Serial.println("Led turn on...");
+  server.send(200, "text/html", SendHTML());
+}
+void handle_LedOff(){
+  set_case = 2;
+  Serial.println("Led turn off...");
+  server.send(200, "text/html", SendHTML());
+}
+void ardu_action() {
+  switch(set_case){
+    case 1: digitalWrite(D4, 0); break;
+    case 2: digitalWrite(D4, 1); break;
+    }
+}
